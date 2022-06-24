@@ -1,8 +1,7 @@
 import React from 'react';
-import { data, DataType } from '../../database';
+import { data, DataType, uploadingData } from '../../database';
 import styles from './Portfolio.module.css';
 import PortfolioList from './PortfolioList';
-import { log } from 'util';
 
 type CategoryType = {
   id: number;
@@ -10,7 +9,7 @@ type CategoryType = {
   path: string;
 };
 
-const CategoryList: CategoryType[] = [
+const categoryList: CategoryType[] = [
   { id: 1, name: 'Show All', path: '/' },
   { id: 2, name: 'Design', path: '/' },
   { id: 3, name: 'Branding', path: '/' },
@@ -22,37 +21,63 @@ const Portfolio = () => {
   const [activeCategory, setActiveCategory] = React.useState<
     string | 'Show All' | 'Design' | 'Branding' | 'Illustration' | 'Motion'
   >('Show All');
-  const [portfolioData, setPortfolioData] = React.useState<DataType[]>(data.slice(0, 9));
-  const [loadingMore, setLoadingMore] = React.useState<boolean>(true);
+  const [portfolioData, setPortfolioData] = React.useState<DataType[]>(data);
+
+  const dataRef = React.useRef<DataType[]>();
+  const ref = (dataRef.current = portfolioData);
 
   const onActiveCategory = React.useCallback((category: string, e: React.SyntheticEvent) => {
     e.stopPropagation();
-    // const filteredCategory = [...portfolioData, ...portfolioData2].filter(
-    //   (obj) => obj.category === category,
-    // );
-    const filteredCategory = [...portfolioData, ...portfolioData.slice(9, 18)].filter((obj) => {
-      if (category === 'Show All') {
-        return obj;
-      } else if (category === obj.category) {
-        return obj.category === category;
+    switch (category) {
+      case 'Show All': {
+        const data = ref.filter((obj) => obj.category !== '');
+        setPortfolioData(data);
+        break;
       }
-    });
-    setPortfolioData(filteredCategory);
+
+      case 'Design': {
+        const data = ref.filter((obj) => obj.category === 'Design');
+        setPortfolioData(data);
+        break;
+      }
+      case 'Branding': {
+        const data = ref.filter((obj) => obj.category === 'Branding');
+        setPortfolioData(data);
+        break;
+      }
+      case 'Illustration': {
+        const data = ref.filter((obj) => obj.category === 'Illustration');
+        setPortfolioData(data);
+        break;
+      }
+      case 'Motion': {
+        const data = ref.filter((obj) => obj.category === 'Motion');
+        setPortfolioData(data);
+        break;
+      }
+    }
     setActiveCategory(category);
   }, []);
-  console.log(portfolioData.length);
 
   const loadMore = React.useCallback(() => {
-    setPortfolioData(data.slice(0));
-    setLoadingMore(false);
+    setPortfolioData((prev) => [...prev.concat(uploadingData)]);
   }, []);
-
-  console.log(activeCategory);
 
   return (
     <div className={styles.portfolio}>
+      <select
+        value={activeCategory}
+        onChange={(e) => onActiveCategory(e.target.value, e)}
+        className={styles.select}
+      >
+        {categoryList.map((obj) => (
+          <option value={obj.name} key={obj.id}>
+            {obj.name}
+          </option>
+        ))}
+      </select>
       <ul className={styles.categories}>
-        {CategoryList.map((obj) => (
+        {categoryList.map((obj) => (
           <li
             onClick={(e) => onActiveCategory(obj.name, e)}
             style={{ color: activeCategory === obj.name ? '#16CD53' : '' }}
@@ -64,7 +89,7 @@ const Portfolio = () => {
       </ul>
       <PortfolioList onActiveCategory={onActiveCategory} portfolioData={portfolioData} />
       <div className={styles.loadMore}>
-        {loadingMore && (
+        {portfolioData.length <= 9 && (
           <button onClick={loadMore} className={styles.loadMoreBtn}>
             LOAD MORE
           </button>

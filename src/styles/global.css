@@ -15,3 +15,17 @@ body {
   width: 1169px;
   margin: auto;
 }
+
+@media (max-width: 375px) {
+  .main {
+    width: 375px;
+    margin: 0;
+  }
+}
+
+@media (max-width: 400px) {
+  .main {
+    width: 390px;
+    margin: 0;
+  }
+}

@@ -25,7 +25,9 @@ export const data: DataType[] = [
   { id: 7, img: image7, category: 'Motion', title: 'Architect' },
   { id: 8, img: image8, category: 'Design', title: 'Calc' },
   { id: 9, img: image9, category: 'Branding', title: 'Sport' },
+];
 
+export const uploadingData: DataType[] = [
   { id: 10, img: image1, category: 'Design', title: 'SOFA 2' },
   { id: 11, img: image2, category: 'Branding', title: 'KeyBoard 2' },
   { id: 12, img: image3, category: 'Illustration', title: 'Work Media 2' },
